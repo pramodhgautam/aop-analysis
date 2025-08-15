@@ -2,20 +2,28 @@ package com.nchl.aopanalysis.analyzer;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 
 import java.io.IOException;
-import java.nio.file.Path;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+
+import java.io.File;
+import java.io.IOException;
 
 public class StaticAnalyzer {
 
-    public static void analyze(Path javaFilePath) throws IOException {
-        CompilationUnit cu = StaticJavaParser.parse(javaFilePath);
+    public static void analyzeAndPrint(String javaFilePath) throws IOException {
+        File file = new File(javaFilePath); // <-- convert string path to File
+        CompilationUnit cu = StaticJavaParser.parse(file);
 
-        cu.getTypes().forEach(type -> {
-            System.out.println("[Static] Class: " + type.getName());
-            type.getMethods().forEach(method ->
-                System.out.println("[Static] Method: " + method.getNameAsString())
-            );
-        });
+        cu.findAll(com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class)
+                .forEach(clazz -> {
+                    System.out.println("[Static] Class: " + clazz.getNameAsString());
+                    clazz.getMethods().forEach(method ->
+                            System.out.println("[Static] Method: " + method.getNameAsString()));
+                });
     }
 }

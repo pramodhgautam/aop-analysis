@@ -7,16 +7,19 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class AopLoggingAspect {
 
-    @Around("execution(* HelloWorld.greet(..))")
-    public Object logAndTime(ProceedingJoinPoint pjp) throws Throwable {
-        String methodName = pjp.getSignature().toShortString();
-        long start = System.nanoTime();
-        System.out.println("[AOP] Entering " + methodName);
+    @Around(
+            "execution(* com.nchl.aopanalysis.analyzer.HelloWorld.greet(..)) || " +
+                    "execution(* com.nchl.aopanalysis.analyzer.HelloWorld.main(..))"
+    )
+    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("[AOP] Entering " + joinPoint.getSignature().toShortString());
+        long start = System.currentTimeMillis();
 
-        Object result = pjp.proceed();
+        Object result = joinPoint.proceed();
 
-        long elapsed = System.nanoTime() - start;
-        System.out.println("[AOP] Exiting " + methodName + " (took " + elapsed / 1_000_000 + " ms)");
+        long timeTaken = System.currentTimeMillis() - start;
+        System.out.println("[AOP] Exiting " + joinPoint.getSignature().toShortString() + " (took " + timeTaken + " ms)");
         return result;
     }
+
 }
